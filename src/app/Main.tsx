@@ -35,7 +35,9 @@ const Main = () => {
       return;
     }
     const roomName = window.prompt('空间名');
+    if (!roomName) return;
     const joinName = window.prompt('昵称');
+    if (!joinName) return;
     if (!roomName) return;
     socket = io(`/link?roomName=${roomName}&joinName=${joinName}`, {
       reconnection: true,

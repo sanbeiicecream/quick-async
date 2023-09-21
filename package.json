@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 23333",
+    "dev": "next dev",
     "build": "next build",
-    "start": "next start --port 23333",
+    "start": "next start",
     "lint": "next lint",
     "server": "node server.js"
   },

@@ -13,13 +13,14 @@ const {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // output: 'standalone',
   experimental: {
-    appDir: true
+    appDir: true,
   }
 };
 
 const bootServices = async () => {
-  return fetch('http://localhost:23333/api/_boot')
+  return fetch(`${process.env?.START_ORIGIN || 'http://127.0.0.1:3000'}/api/_boot`)
     .then(async (res) => {
       const resJson = await res.json();
 
