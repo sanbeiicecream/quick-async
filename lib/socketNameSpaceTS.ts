@@ -8,11 +8,17 @@ let linkSpace: Namespace
 function chat(io: Server) {
   chatSpace = io.of("/chat");
   global.chatSpace = chatSpace
+  chatSpace.adapter.on("join-room", (room, id) => {
+    logger.info(`客户端：${id}，加入房间：${room}`);
+  });
+  chatSpace.adapter.on("leave-room", (room, id) => {
+    logger.info(`客户端：${id}，离开房间：${room}`);
+  });
   chatSpace.on('connection', async socket => {
-    logger.info(`客户端socket连接，ID: ${socket.id}`)
     const roomName = decodeURIComponent(socket.handshake.url.match(/[?&]roomName=([^&]*)/)?.[1] || '');
     const cuid = socket.handshake.url.match(/[?&]cuid=([^&]*)/)?.[1] || '';
     const uid = socket.handshake.url.match(/[?&]uid=([^&]*)/)?.[1] || '';
+    logger.info(`客户端socket请求连接，ID: ${socket.id}，CUID: ${cuid}，UID: ${uid}`)
     if (roomName) {
       if (global.cuidList?.includes?.(cuid)) {
         const ip = socket.handshake.headers.referer;
@@ -88,6 +94,7 @@ function link(io: Server) {
         const uid = uuidv4()
         global.uidSocketIdMap[uid] = socket.id
         chatSpace.to(roomName).to(socketIdOfRoom)?.emit?.('join', { uid, ip, joinName })
+        logger.info(`客户端：${socket.id}，申请加入房间：${roomName}`);
       }
     } catch (e) {
       logger.error(e)

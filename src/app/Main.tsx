@@ -1,14 +1,14 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ResponseData } from 'types/custom';
 import { io, Socket } from 'socket.io-client';
 
 let socket: Socket;
 const Main = () => {
   const [waiting, setWaiting] = useState(false);
+  const joinSignal = useRef(false);
   const router = useRouter();
   const create = async () => {
     const roomName = window.prompt('空间名称');
@@ -34,35 +34,50 @@ const Main = () => {
       socket.disconnect();
       return;
     }
+    let joinData: ResponseData<{ uid: string; createAt: string }>['data'] = {
+      uid: '',
+      createAt: '',
+    };
     const roomName = window.prompt('空间名');
     if (!roomName) return;
     const joinName = window.prompt('昵称');
     if (!joinName) return;
     if (!roomName) return;
-    socket = io(`/link?roomName=${roomName}&joinName=${joinName}`, {
+    socket = io('/link', {
       reconnection: true,
       addTrailingSlash: false,
       reconnectionAttempts: 3,
+      query: {
+        roomName,
+        joinName,
+      },
     });
     socket.on('connect', () => {
       console.log('连接成功');
       socket.on('disconnect', () => {
-        console.log('断开连接');
         setWaiting(false);
+        if (joinSignal.current) {
+          joinSignal.current = false;
+          router.push(
+            `/room/into?roomName=${roomName}&uid=${joinData?.uid}&createAt=${joinData?.createAt}&joinName=${joinName}`
+          );
+        }
       });
       socket.on(
         'join',
         (res: ResponseData<{ uid: string; createAt: string }>['data']) => {
+          console.log('准备跳转：断开Link');
+          // 先断开这个连接后才能跳转
+          joinSignal.current = true;
+          joinData = res;
           socket.disconnect();
-          router.push(
-            `/room/into?roomName=${roomName}&uid=${res?.uid}&createAt=${res?.createAt}&joinName=${joinName}`
-          );
         }
       );
       setWaiting(true);
     });
   };
   useEffect(() => {
+    // 使用单独server.js启动时需要注释下面这行
     fetch('/api/socket');
     return () => {
       if (socket?.connected) {

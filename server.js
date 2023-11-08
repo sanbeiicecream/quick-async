@@ -17,7 +17,7 @@ global.uidList = []
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = '127.0.0.1';
-const port = 2333;
+const port = process.env?.START_ORIGIN || 2333;
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();

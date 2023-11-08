@@ -38,7 +38,16 @@
   list-style-type: none;
   margin: 0;
   padding: 0;
+  padding: 0 5px 2.8rem 0;
+  height: 100vh;
+  overflow: auto;
+  width: 100vw;
 }
+.msg-content span {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
 .messages > li {
   padding: 0.5rem 1rem;
 }
@@ -56,6 +65,7 @@
 
 .join-list {
   position: fixed;
+  background-color: #fff;
   bottom: calc(var(--message-form-height) + 0.5rem);
   right: 0;
   text-align: center;
@@ -71,6 +81,7 @@
   font-size: 16px;
   padding: 0.2em;
   background-color: #007bff; /* 初始背景颜色 */
+  border-radius: 2px;
   color: #fff; /* 文字颜色 */
   border: none;
   cursor: pointer;

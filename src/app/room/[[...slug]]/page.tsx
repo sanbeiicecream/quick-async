@@ -18,6 +18,7 @@ const ChatPage = () => {
   const search = useSearchParams();
   const params = useParams();
   const sendMsg = useRef('');
+  const messageRef = useRef<HTMLUListElement | null>(null);
   const [content, setContent] = useState<{ msg: string; ip: string }[]>([]);
   const [inputVal, setInputVal] = useState('');
   const joinListRef = useRef<JoinList[]>([]);
@@ -58,28 +59,22 @@ const ChatPage = () => {
   }, [onKeyDown]);
 
   const socketInitializer = async () => {
+    const query: { [key: string]: any } = {
+      roomName: search?.get('roomName') || '',
+      cuid: search?.get('cuid') || '',
+    };
     if (params?.slug === 'into') {
-      socket = io(
-        `/chat?roomName=${search?.get('roomName') || ''}&uid=${
-          search?.get('uid') || ''
-        }`,
-        {
-          reconnection: true,
-          addTrailingSlash: false,
-          reconnectionAttempts: 3,
-        }
-      );
-    } else {
-      socket = io(
-        `/chat?roomName=${search?.get('roomName') || ''}&cuid=${
-          search?.get('cuid') || ''
-        }`,
-        {
-          reconnection: true,
-          addTrailingSlash: false,
-          reconnectionAttempts: 3,
-        }
-      );
+      query.uid = search?.get('uid') || '';
+      delete query.cuid;
+    }
+    socket = io('/chat', {
+      reconnection: true,
+      addTrailingSlash: false,
+      reconnectionAttempts: 3,
+      forceNew: true,
+      query,
+    });
+    params?.slug !== 'into' &&
       socket.on('join', (res: ResponseData<JoinList>['data']) => {
         console.log(res);
         joinListRef.current.push({
@@ -88,9 +83,9 @@ const ChatPage = () => {
         });
         setJoinList([...joinListRef.current]);
       });
-    }
     socket.on('disconnect', () => {
       setConnectionStatus(false);
+      setJoinListVisible(false);
       setFootVisible(false);
     });
     socket.on('connect', () => {
@@ -100,9 +95,12 @@ const ChatPage = () => {
     socket.on('msg', data => {
       console.log(data);
       setContent(content => [...content, ...data]);
-      window.scrollTo(0, document.body.scrollHeight);
     });
   };
+
+  useEffect(() => {
+    messageRef.current?.scroll(0, 99999999999);
+  }, [content]);
 
   useEffect(() => {
     if (isFrist.current) {
@@ -144,7 +142,7 @@ const ChatPage = () => {
       {!connectionStatus && (
         <div className='bg-red-500 text-zinc-50 text-center'>断开连接</div>
       )}
-      <ul className='messages'>
+      <ul className='messages' ref={messageRef}>
         {content.map(item => {
           return (
             <li key={item.msg + Math.random()}>
