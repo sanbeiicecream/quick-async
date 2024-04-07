@@ -1,12 +1,8 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "target": "ES5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "target": "ES2015",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -26,18 +22,12 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     }
   },
   "ts-node": {
     "esm": true,
-    "ignore": [
-      "node_modules",
-      "tailwind.config.cjs",
-      "postcss.config.cjs"
-    ]
+    "ignore": ["node_modules", "tailwind.config.cjs", "postcss.config.cjs"]
   },
   "include": [
     "next-env.d.ts",
@@ -46,7 +36,5 @@
     "**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules", ".next"]
 }

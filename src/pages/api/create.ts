@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
     success: true
   }
   if (!res.socket.server.io) {
-    logger.error('使用额外的server.js启动，第一次请求需要挂载socket.io对象')
+    logger.warn('使用额外的server.js启动，第一次请求需要挂载socket.io对象')
     resData = {
       status: 500,
       msg: '服务发生异常，请稍后再试',
@@ -28,7 +28,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
     }
     return res.status(resData.status || 500).json({ msg: resData.msg, success: resData.success })
   }
-  if (await mongodbUtils.hasDocByName(req.body?.roomName)) {
+  const hasDoc = await mongodbUtils.hasDocByName(req.body?.roomName)
+  if (!global.mongoConnected) {
+    resData = {
+      status: 500,
+      msg: '数据库服务未能连接',
+      success: false,
+      data: null
+    }
+    return res.status(resData.status || 500).json({ msg: resData.msg, success: resData.success, data: resData.data })
+  }
+  if (hasDoc) {
     logger.info(`空间已存在：${req.body?.roomName}`)
     resData = {
       status: 200,

@@ -1,5 +1,6 @@
-import '../../public/style/reset.css';
-import '../../public/style/globals.css';
+import '@/style/reset.css';
+import '@/style/globals.css';
+import { AntdRegistry } from '@ant-design/nextjs-registry';
 
 export const metadata = {
   title: 'quick sync',
@@ -13,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang='zh-CN' translate='no'>
-      <body>{children}</body>
+      <body><AntdRegistry>{children}</AntdRegistry></body>
     </html>
   );
 }

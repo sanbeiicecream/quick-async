@@ -6,13 +6,8 @@
       "request": "launch",
       "name": "Next.js Debug",
       "runtimeExecutable": "node",
-      "runtimeArgs": [
-        "--inspect"
-      ],
       "program": "${workspaceFolder}/node_modules/next/dist/bin/next",
-      "args": [
-        "dev"
-      ]
+      "args": ["dev", "-p", "33330"]
     },
     {
       "type": "node",
@@ -22,9 +17,10 @@
       // "runtimeArgs": [
       //   "--inspect"
       // ],
-      "runtimeArgs": [
-        "--inspect"
-      ],
+      "env": {
+        "START_ORIGIN": "33330"
+      },
+      "runtimeArgs": ["--inspect"],
       "program": "${workspaceFolder}/server.js"
     },
     {
@@ -32,13 +28,9 @@
       "request": "launch",
       "name": "Custom Server Debug1",
       "runtimeExecutable": "node",
-      "runtimeArgs": [
-        "--inspect"
-      ],
+      "runtimeArgs": ["--inspect"],
       // "program": "${workspaceFolder}/node_modules/ts-node/dist/bin",
-      "args": [
-        "${workspaceFolder}/server.js"
-      ]
-    },
+      "args": ["${workspaceFolder}/server.js"]
+    }
   ]
 }

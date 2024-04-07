@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
     msg: '等待中',
     success: true
   }
-  if (!res.socket.server.io && process.env.NODE_ENV === 'production') {
+  if (!res.socket.server.io) {
     resData = {
       status: 500,
       msg: '服务发生异常，请稍后再试',
@@ -32,9 +32,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
   if (socketIdOfRoom) {
     logger.info(`空间存在-同意加入：${req.body?.roomName}`)
     // 向申请者socket发送同意信息
-    const uid = uuidv4()
-    res.socket.server.io.of('/link').to(dayjs().format('YYYY-MM-DD')).to(global.uidSocketIdMap[uid])?.emit('join',
-      { uid, createAt: new Date().getTime() })
+    const sockets = await res.socket.server.io.of('/link').in(dayjs().format('YYYY-MM-DD')).fetchSockets()
+    sockets.find(item => {
+      if (item.id === global.uidSocketIdMap[uid]) {
+        item.emit('join', { uid, createAt: new Date().getTime() })
+        return true
+      }
+    })
+    // to(global.uidSocketIdMap[uid])?.emit('join',
+    //   { uid, createAt: new Date().getTime() })
     // 删除加入时socketid与uid的map
     delete global.uidSocketIdMap[uid]
     // 生成一个新的允许加入的uid，加入时需要匹配才能加入
