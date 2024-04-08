@@ -97,9 +97,9 @@ const RoomHeader: React.FC<Props> = props => {
         </div> :
         <>
           <Drawer title='成员' open={open} onClose={onClose} mask={false} width='260px' classNames={{ header: 'drawer-header' }}>
-            {props.members?.map((item, index) =>
+            {props.members?.map(item =>
               <div key={item.uid} className='flex flex-wrap justify-between mb-6'>
-                <span className='break-words'>{item.name}</span>
+                <span className='break-words'>{decodeURIComponent(item.name || 'unknown')}</span>
                 <Button size='small' onClick={() => agreeJoin(item.uid)} loading={btnsLoading?.[item.uid || '']}>连接</Button>
               </div>)}
           </Drawer>
