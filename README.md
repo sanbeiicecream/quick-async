@@ -7,11 +7,11 @@ Socket.IO -> ^4.7.2
 MongoDB -> ^6.0.0  
 
 需要在.env.local添加两个环境变量  
-START_ORIGIN -> 本地启动路径/默认http://127.0.0.1:3000
-MONGODB_URI  -> MongoDB连接地址
-MONGODB_DB   -> 需要保存数据的数据库/默认chat
-LOCAL_STORE -> 是否启用本地数据库（文本形式）
-LOGGER -> 是否记录日志 0->不记录 1->记录
+START_ORIGIN -> 本地启动路径/默认http://127.0.0.1:3000  
+MONGODB_URI  -> MongoDB连接地址  
+MONGODB_DB   -> 需要保存数据的数据库/默认chat  
+LOCAL_STORE -> 是否启用本地数据库（文本形式）  
+LOGGER -> 是否记录日志 0->不记录 1->记录  
 ## TODO
 
 
