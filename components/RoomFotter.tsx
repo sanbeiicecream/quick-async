@@ -1,9 +1,9 @@
 'use client'
-import { Input, Button } from "antd";
-import { useState } from "react";
-import { Socket } from "socket.io-client";
-import { ClientToServerEvents, RoomProps } from "types/custom";
-import { parseQueryParams } from 'lib/useRoomPageInit';
+import { Button, TextInput } from 'flowbite-react'
+import { useState } from 'react'
+import { Socket } from 'socket.io-client'
+import { ClientToServerEvents, RoomProps } from 'types/custom'
+import { parseQueryParams } from 'lib/useRoomPageInit'
 
 interface Props {
   socket?: Socket<ClientToServerEvents> | null
@@ -19,16 +19,25 @@ const RoomFotter = (props: Props) => {
       msg: inputVal,
       time: new Date().toISOString(),
       roomName: queryParams.roomName,
-      username: props.type !== 'member' ? 'creator' : queryParams.joinName
+      username: props.type !== 'member' ? 'creator' : queryParams.joinName,
     })
   }
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputVal(e.target.value)
   }
   return (
-    <footer className="flex">
-      <Input value={inputVal} onPressEnter={onSend} onChange={onChange} />
-      <Button className="ml-2" onClick={onSend} >send</Button>
+    <footer className='flex gap-2'>
+      <TextInput
+        id='base'
+        type='text'
+        sizing='md'
+        className='w-full'
+        value={inputVal}
+        onChange={onChange}
+      />
+      <Button className='ml-2' onClick={onSend}>
+        send
+      </Button>
     </footer>
   )
 }

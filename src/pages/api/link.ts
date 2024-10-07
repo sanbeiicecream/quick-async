@@ -2,7 +2,7 @@ import { NextApiRequest } from 'next'
 import type { NextApiResponseServerIO } from 'types/next'
 import mongodbUtils from 'lib/utils'
 import { ResponseData } from 'types/custom'
-import { v4 as uuidv4 } from 'uuid';
+import logger from 'lib/logger'
 import dayjs from 'dayjs';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponseServerIO) {

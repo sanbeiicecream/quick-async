@@ -1,10 +1,9 @@
 'use client'
-import MessageList from "components/MessageList"
-import RoomFotter from "components/RoomFotter"
-import RoomHeader from "./RoomHeader";
-import { Member, Messages, RoomProps, notifyInfo } from "types/custom";
-import { Alert } from "antd";
-import { Socket } from "socket.io-client";
+import MessageList from 'components/MessageList'
+import RoomFotter from 'components/RoomFotter'
+import RoomHeader from './RoomHeader'
+import { Member, Messages, RoomProps, notifyInfo } from 'types/custom'
+import { Socket } from 'socket.io-client'
 
 interface Props {
   type: RoomProps['type']
@@ -18,7 +17,7 @@ interface Props {
 }
 const Room: React.FC<Props> = props => {
   return (
-    <div className="flex p-2 flex-col justify-between h-screen">
+    <div className='flex p-2 flex-col justify-between h-screen'>
       <RoomHeader
         type={props.type}
         socket={props.socket}

@@ -2,11 +2,11 @@
 
 import { notifyInfo } from './../types/custom';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import '@/style/page.css';
 import { io, Socket } from 'socket.io-client';
 import { ClientToServerEvents, Messages } from 'types/custom';
 
 export function parseQueryParams(url: string): Record<string, string> {
+  if (!url) return {}
   const urlParams = new URLSearchParams(new URL(url).search);
   const queryParams: Record<string, string> = {};
   for (const [key, value] of urlParams.entries()) {
@@ -16,6 +16,7 @@ export function parseQueryParams(url: string): Record<string, string> {
   return queryParams;
 }
 
+// 聊天页面socketio初始化
 const useRoomPageInit = () => {
   let queryParams = useRef({ roomName: '', cuid: '', uid: '' })
   const socket = useRef<Socket<ClientToServerEvents> | null>();

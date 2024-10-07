@@ -2,6 +2,7 @@ import { NamespaceSpecificClientToServerEvents, NamespaceSpecificServerToClientE
 import { Namespace, Server } from "socket.io";
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from "dayjs";
+import logger from 'lib/logger'
 const mongodbUtils = require("./utils.js")
 
 let chatSpace: Namespace<NamespaceSpecificServerToClientEvents, NamespaceSpecificClientToServerEvents, NamespaceSpecificSocketData>
@@ -114,7 +115,7 @@ function link(io: Server) {
         logger.info(`客户端：${socket.id}，申请加入房间：${roomName}`);
       }
     } catch (e) {
-      appLogger.error(e)
+      logger.error(e)
       return socket.disconnect()
     }
 

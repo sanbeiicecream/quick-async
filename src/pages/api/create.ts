@@ -3,6 +3,7 @@ import type { NextApiResponseServerIO } from 'types/next'
 import mongodbUtils from 'lib/utils'
 import { ResponseData } from 'types/custom'
 import { v4 as uuidv4 } from 'uuid';
+import logger from 'lib/logger';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponseServerIO) {
   let resData: ResponseData = {
@@ -11,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
     success: true
   }
   if (!res.socket.server.io) {
-    logger.warn('使用额外的server.js启动，第一次请求需要挂载socket.io对象')
+    logger.error('使用额外的server.js启动，第一次请求需要挂载socket.io对象')
     resData = {
       status: 500,
       msg: '服务发生异常，请稍后再试',

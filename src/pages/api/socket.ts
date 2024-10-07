@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import { NextRequest } from "next/server";
 import type { NextApiResponseServerIO } from 'types/next'
+import logger from "lib/logger";
 import initIo from 'lib/socketNameSpace'
 
 export default function handler(req: NextRequest, res: NextApiResponseServerIO) {
