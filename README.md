@@ -6,10 +6,12 @@
 
 
 版本（**NextJS版本与MongoDB版本换成其他的可能有bug**）  
-NodeJS -> 19.0.0+
-NextJS -> 15.0.0+
+
+NodeJS -> 19.0.0+  
+NextJS -> 15.0.0+  
 Socket.IO -> ^4.7.2  
-MongoDB -> ^6.9.0 
+MongoDB -> ^6.9.0  
+
 
 需要在.env.local添加两个环境变量  
 START_ORIGIN -> 本地启动路径/默认http://127.0.0.1:3000  
