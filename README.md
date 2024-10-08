@@ -6,10 +6,12 @@
 
 
 版本（**NextJS版本与MongoDB版本换成其他的可能有bug**）  
-NodeJS -> 19.0.0+
-NextJS -> 15.0.0+
+
+NodeJS -> 19.0.0+  
+NextJS -> 15.0.0+  
 Socket.IO -> ^4.7.2  
-MongoDB -> ^6.9.0 
+MongoDB -> ^6.9.0  
+
 
 .env.local  环境变量  
 | 变量名      |                                    |
