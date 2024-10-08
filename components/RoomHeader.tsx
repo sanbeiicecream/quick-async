@@ -14,6 +14,8 @@ import { Socket } from 'socket.io-client'
 import { useRouter } from 'next/navigation'
 import { parseQueryParams } from 'lib/useRoomPageInit'
 
+const basePath = process.env.BASE_PATH || ''
+
 interface Props {
   notify?: string
   peopleCount?: string
@@ -61,7 +63,7 @@ const RoomHeader: React.FC<Props> = props => {
       return
     }
     const queryParams = parseQueryParams(location.href)
-    fetch('/api/link', {
+    fetch(`${basePath}/api/link`, {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
@@ -187,9 +189,8 @@ const RoomHeader: React.FC<Props> = props => {
           <div className='text-center'>
             {shareRef.current ? (
               <QRCodeCanvas
-                value={`${location.origin}?share=${
-                  parseQueryParams(location.href)?.roomName
-                }`}
+                value={`${location.origin}${basePath}?share=${parseQueryParams(location.href)?.roomName
+                  }`}
                 className='ml-auto mr-auto'
               />
             ) : (

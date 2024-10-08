@@ -1,3 +1,4 @@
+const basePath = process.env.BASE_PATH || ''
 /**
  * @type {import('next').NextConfig}
  */
@@ -6,7 +7,11 @@ const nextConfig = {
     instrumentationHook: true,
     reactCompiler: true,
   },
-  serverExternalPackages: ['winston']
+  serverExternalPackages: ['winston'],
+  basePath: basePath,
+  env: {
+    BASE_PATH: basePath
+  }
 };
 
 

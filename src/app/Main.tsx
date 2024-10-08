@@ -7,6 +7,8 @@ import { io, Socket } from 'socket.io-client'
 import toast, { Toaster } from 'react-hot-toast'
 import { ResponseData } from 'types/custom'
 import { parseQueryParams } from 'lib/useRoomPageInit'
+
+const basePath = process.env.BASE_PATH || ''
 let socket: Socket
 
 type ButtonHandleType = 'create' | 'into' | 'share'
@@ -21,7 +23,6 @@ const Main = () => {
   const [cnaClick, setCanClick] = useState(false)
   const router = useRouter()
   const params = useParams()
-  console.log(params)
   const isCancelLink = useRef(false)
   const inputRefs = useRef({ roomName: '', username: '' })
   const joinSignal = useRef(false)
@@ -54,7 +55,7 @@ const Main = () => {
 
   useEffect(() => {
     // 使用单独server.js启动时需要注释下面这行
-    fetch('/api/socket')
+    fetch(`${basePath}/api/socket`)
     const queryParams = parseQueryParams(
       typeof window !== 'undefined' ? window.location?.href : ''
     )
@@ -104,6 +105,7 @@ const Main = () => {
     const joinName = inputRefs.current.username
     try {
       socket = io('/link', {
+        path: `${basePath}/socket.io/`,
         reconnection: true,
         addTrailingSlash: false,
         reconnectionAttempts: 3,
@@ -156,7 +158,7 @@ const Main = () => {
   const create = async () => {
     try {
       const roomName = inputRefs.current.roomName
-      const data = await fetch('/api/create', {
+      const data = await fetch(`${basePath}/api/create`, {
         method: 'post',
         headers: {
           'Content-Type': 'application/json',

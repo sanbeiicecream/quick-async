@@ -1,6 +1,6 @@
 export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
-    const { initMongoDB, getDBAndConnection } = require("lib/mongodb");
+    const { initMongoDB, getDBAndConnection } = require('lib/mongodb')
     const logger = require('lib/logger')
     global.uidSocketIdMap = {}
     global.cuidList = []
