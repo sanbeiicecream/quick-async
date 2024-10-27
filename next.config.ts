@@ -1,18 +1,15 @@
+import type { NextConfig } from 'next'
 const basePath = process.env.BASE_PATH || ''
-/**
- * @type {import('next').NextConfig}
- */
-const nextConfig = {
+
+const nextConfig: NextConfig = {
   experimental: {
-    instrumentationHook: true,
     reactCompiler: true,
   },
   serverExternalPackages: ['winston'],
   basePath: basePath,
   env: {
-    BASE_PATH: basePath
-  }
-};
+    BASE_PATH: basePath,
+  },
+}
 
-
-module.exports = nextConfig;
+export default nextConfig

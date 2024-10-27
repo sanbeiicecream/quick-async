@@ -1,11 +1,11 @@
-import flowbite from "flowbite-react/tailwind";
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import type { Config } from 'tailwindcss'
+import { content, plugin } from 'flowbite-react/tailwind'
+export default {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
-    flowbite.content(),
+    content(),
   ],
   theme: {
     extend: {
@@ -20,7 +20,5 @@ module.exports = {
       padding: '2rem',
     },
   },
-  plugins: [
-    flowbite.plugin(),
-  ]
-}
+  plugins: [plugin()],
+} satisfies Config
