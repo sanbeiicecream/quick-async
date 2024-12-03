@@ -1,6 +1,5 @@
 'use client'
-import '@/style/room.css'
-import Room from "components/Room"
+import Room from 'components/Room'
 import useRoomPageInit from 'lib/useRoomPageInit'
 import { useEffect, useRef, useState } from 'react'
 import { Member, ResponseData } from 'types/custom'
@@ -18,17 +17,19 @@ const Creator = () => {
         setMembers(data => {
           const newData = data?.concat({
             uid: res?.uid || '',
-            name: res?.name || ''
+            name: res?.name || '',
           })
           return newData
         })
-      });
+      })
     }
     isFrist.current = false
   }, [socket])
   return (
     <>
-      {members.forEach(item => <div>{item.name}</div>)}
+      {members.forEach(item => (
+        <div>{item.name}</div>
+      ))}
       <Room
         type='creator'
         messages={messages}

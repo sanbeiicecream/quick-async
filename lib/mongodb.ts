@@ -1,4 +1,6 @@
-const { MongoClient } = require("mongodb")
+// const { } = require("mongodb")
+import { MongoClient } from 'mongodb'
+import logger from "./logger";
 
 function initMongoDB() {
   const MONGODB_URI = process.env.MONGODB_URI;
@@ -13,7 +15,7 @@ function initMongoDB() {
   }
 }
 
-async function performDatabaseOperations(cb) {
+async function performDatabaseOperations(cb: (val: any) => {}) {
   const MONGODB_URI = process.env.MONGODB_URI;
   const MONGODB_DB = process.env.MONGODB_DB || 'chat';
   let connection;
@@ -54,10 +56,12 @@ async function getDBAndConnection() {
     global.mongoConnected = true
     return { connection, db }
   } catch (e) {
-    appLogger.error(e);
+    logger.error(e);
     global.mongoConnected = false
     return { connection: null, db: null }
   }
 }
 
-module.exports = { getDBAndConnection, performDatabaseOperations, initMongoDB }
+// module.exports = { getDBAndConnection, performDatabaseOperations, initMongoDB }
+
+export { getDBAndConnection, performDatabaseOperations, initMongoDB }

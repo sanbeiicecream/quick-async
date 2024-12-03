@@ -1,13 +1,20 @@
-import Marquee from 'react-fast-marquee';
-import { Alert, Button, Drawer, Modal, Spin, message } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { ClientToServerEvents, Member, ResponseData, RoomProps, ServerToClientEvents, notifyInfo } from 'types/custom';
-import { ExclamationCircleFilled } from '@ant-design/icons';
-import { Socket } from 'socket.io-client';
-import { useRouter } from 'next/navigation';
-import { parseQueryParams } from 'lib/useRoomPageInit';
-const { confirm } = Modal;
+import Marquee from 'react-fast-marquee'
+import { HiInformationCircle, HiOutlineExclamationCircle } from 'react-icons/hi'
+import { Alert, Button, Drawer, Spinner, Modal } from 'flowbite-react'
+import React, { useRef, useState } from 'react'
+import { QRCodeCanvas } from 'qrcode.react'
+import {
+  ClientToServerEvents,
+  Member,
+  ResponseData,
+  RoomProps,
+  notifyInfo,
+} from 'types/custom'
+import { Socket } from 'socket.io-client'
+import { useRouter } from 'next/navigation'
+import { parseQueryParams } from 'lib/useRoomPageInit'
 
+const basePath = process.env.BASE_PATH || ''
 
 interface Props {
   notify?: string
@@ -19,57 +26,44 @@ interface Props {
   members?: Member[]
   onAllow?: (props: Member) => void
 }
+
+type handleType = 'destroy' | 'exit' | 'share'
 const RoomHeader: React.FC<Props> = props => {
   const router = useRouter()
-  const [open, setOpen] = useState(false);
+  const [openDrawer, setDrawer] = useState(false)
+  const [openModal, setOpenModal] = useState(false)
   const [btnsLoading, setBtnsLoading] = useState<{ [key: string]: boolean }>()
-  const showModal = () => {
-    setOpen(true);
-  };
+  const shareRef = useRef(false)
 
-  const onClose = () => {
-    setOpen(false);
-  };
+  const onOpenDrawer = (type: boolean) => {
+    setDrawer(type)
+  }
 
-  const showConfirm = () => {
-    confirm({
-      icon: <ExclamationCircleFilled />,
-      content: '确定销毁吗？',
-      okText: '确定',
-      cancelText: '取消',
-      onOk() {
-        const queryParams = parseQueryParams(location.href)
-        props.socket?.emit('destroy', { cuid: queryParams.cuid, roomName: queryParams.roomName })
-      },
-    });
-  };
-
-  const onExit = () => {
-    confirm({
-      icon: <ExclamationCircleFilled />,
-      content: '确定退出吗？',
-      okText: '确定',
-      cancelText: '取消',
-      onOk() {
-        props.socket?.disconnect()
-      },
-      onCancel() {
-        console.log('Cancel');
-      },
-    });
-  };
+  const onOk = (type: handleType) => {
+    if (type === 'destroy') {
+      const queryParams = parseQueryParams(location.href)
+      props.socket?.emit('destroy', {
+        cuid: queryParams.cuid,
+        roomName: queryParams.roomName,
+      })
+    } else {
+      props.socket?.disconnect()
+    }
+  }
 
   const onGoHome = () => {
     router.replace('/')
   }
 
+  // 同意用户进入房间
   const agreeJoin = (uid?: string) => {
     if (uid) {
       setBtnsLoading({ ...btnsLoading, [uid]: true })
+    } else {
+      return
     }
     const queryParams = parseQueryParams(location.href)
-    if (!uid) return;
-    fetch('/api/link', {
+    fetch(`${basePath}/api/link`, {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
@@ -81,50 +75,149 @@ const RoomHeader: React.FC<Props> = props => {
         if (res?.success) {
           props.onAllow?.({ uid: uid })
         }
-      }).finally(() => {
+      })
+      .finally(() => {
         if (uid) {
           setBtnsLoading({ ...btnsLoading, [uid]: false })
         }
-      });
-  };
+      })
+  }
+
+  const onClickHandle = (type?: handleType) => {
+    shareRef.current = type === 'share'
+    setOpenModal(true)
+  }
 
   return (
     <>
-      {!props.isLink ?
+      {!props.isLink ? (
         <div className='relative'>
-          <Alert message="断开连接" type="error" showIcon />
-          <Button className='!absolute top-1/2 right-2 !-translate-y-1/2' size='small' onClick={onGoHome}>返回</Button>
-        </div> :
+          <Alert color='failure' icon={HiInformationCircle}>
+            <span>断开连接</span>
+          </Alert>
+          <Button
+            className='!absolute top-1/2 right-2 !-translate-y-1/2'
+            size='sm'
+            onClick={onGoHome}
+          >
+            返回
+          </Button>
+        </div>
+      ) : (
         <>
-          <Drawer title='成员' open={open} onClose={onClose} mask={false} width='260px' classNames={{ header: 'drawer-header' }}>
-            {props.members?.map(item =>
-              <div key={item.uid} className='flex flex-wrap justify-between mb-6'>
-                <span className='break-words'>{decodeURIComponent(item.name || 'unknown')}</span>
-                <Button size='small' onClick={() => agreeJoin(item.uid)} loading={btnsLoading?.[item.uid || '']}>连接</Button>
-              </div>)}
+          <Drawer
+            title='成员'
+            open={openDrawer}
+            onClose={() => onOpenDrawer(false)}
+            position='right'
+          >
+            <Drawer.Header title='成员' titleIcon={() => <></>} />
+            {props.members?.map(item => (
+              <div
+                key={item.uid}
+                className='flex flex-wrap justify-between items-center mb-6'
+              >
+                <span className='break-words'>
+                  {decodeURIComponent(item.name || 'unknown')}
+                </span>
+                <Button size='sm' onClick={() => agreeJoin(item.uid)}>
+                  同意
+                </Button>
+              </div>
+            ))}
           </Drawer>
-          <header className='flex items-center justify-between -mt-2 -ml-2 -mr-2 h-8 bg-neutral-200'>
+          <header className='flex items-center justify-between -mt-2 -ml-2 -mr-2 p-1 bg-neutral-200'>
             <div className='w-2/5'>
-              {
-                props.notify && <Marquee gradient={false}>
-                  {props.notify}
-                </Marquee>
-              }
+              {props.notify && (
+                <Marquee gradient={false}>{props.notify}</Marquee>
+              )}
             </div>
-            <div>
-              <span className='mr-4'>在线人数：{props.notifyInfo?.userCount || <Spin size="small" />}</span>
-              {
-                props.type === 'creator' ?
-                  <>
-                    <Button size='small' onClick={showModal}>成员</Button>
-                    <Button type="primary" danger className='ml-2' size='small' onClick={showConfirm}>销毁</Button>
-                  </>
-                  : <Button size='small' onClick={onExit}>退出</Button>
-              }
+            <div className='flex justify-center'>
+              <span className='flex items-center mr-4'>
+                在线人数：
+                {props.notifyInfo?.userCount || (
+                  <Spinner color='info' aria-label='Info spinner example' />
+                )}
+              </span>
+              {props.type === 'creator' ? (
+                <>
+                  <Button size='xs' onClick={() => onOpenDrawer(true)}>
+                    成员
+                  </Button>
+                  <Button
+                    className='ml-2'
+                    size='xs'
+                    onClick={() => onClickHandle()}
+                  >
+                    销毁
+                  </Button>
+                  <Button
+                    className='ml-2'
+                    size='xs'
+                    onClick={() => onClickHandle('share')}
+                  >
+                    分享
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button size='xs' onClick={() => onClickHandle()}>
+                    退出
+                  </Button>
+                  <Button
+                    className='ml-2'
+                    size='xs'
+                    onClick={() => onClickHandle('share')}
+                  >
+                    分享
+                  </Button>
+                </>
+              )}
             </div>
-          </header >
+          </header>
         </>
-      }
+      )}
+      <Modal
+        show={openModal}
+        size='md'
+        position='top-right'
+        onClose={() => setOpenModal(false)}
+        popup
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className='text-center'>
+            {shareRef.current ? (
+              <QRCodeCanvas
+                value={`${location.origin}${basePath}?share=${parseQueryParams(location.href)?.roomName
+                  }`}
+                className='ml-auto mr-auto'
+              />
+            ) : (
+              <>
+                <HiOutlineExclamationCircle className='mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200' />
+                <h3 className='mb-5 text-lg font-normal text-gray-500 dark:text-gray-400'>
+                  确认{props.type === 'creator' ? '销毁' : '退出'}
+                </h3>
+                <div className='flex justify-center gap-8'>
+                  <Button
+                    color='failure'
+                    onClick={() => {
+                      onOk(props.type === 'creator' ? 'destroy' : 'exit')
+                      setOpenModal(false)
+                    }}
+                  >
+                    确认
+                  </Button>
+                  <Button color='gray' onClick={() => setOpenModal(false)}>
+                    取消
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        </Modal.Body>
+      </Modal>
     </>
   )
 }
